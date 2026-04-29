@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import PageLoader from "@/components/layout/PageLoader";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,10 +16,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Alex Johnson | Web Designer & Art Director",
+  title: "Edmar Cloyd Jagunap | Web Designer",
   description:
-    "Portfolio of Alex Johnson - Web Designer & Art Director crafting digital experiences that merge aesthetics with functionality.",
+    "Portfolio of Edmar Cloyd Jagunap - Web Designer building modern, responsive web applications focused on clean design and seamless user experience.",
 };
 
 export default function RootLayout({
@@ -28,12 +36,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-neutral-950 text-white">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <body className="min-h-full flex flex-col bg-[#E0E0E0] dark:bg-neutral-950 text-[#171717] dark:text-white">
+        <ThemeProvider>
+          <PageLoader />
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

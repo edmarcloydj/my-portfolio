@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
+import ScrollAnimation from "@/components/ui/ScrollAnimation";
+import emailjs from "@emailjs/browser";
 
 interface FormData {
   name: string;
@@ -14,40 +16,8 @@ interface FormErrors {
   message?: string;
 }
 
-function AnimatedSection({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true);
-      },
-      { threshold: 0.1 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      className={`transition-all duration-700 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      } ${className}`}
-    >
-      {children}
-    </div>
-  );
-}
-
 export default function Contact() {
+  const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -56,20 +26,17 @@ export default function Contact() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
       newErrors.email = "Invalid email format";
-    }
-    if (!formData.message.trim()) {
-      newErrors.message = "Message is required";
-    } else if (formData.message.trim().length < 10) {
+    if (!formData.message.trim()) newErrors.message = "Message is required";
+    else if (formData.message.trim().length < 10)
       newErrors.message = "Message must be at least 10 characters";
-    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -77,13 +44,37 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    if (!formRef.current) {
+      setSubmitError("Form is not available.");
+      return;
+    }
+
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      setSubmitError("EmailJS is not properly configured. Please check environment variables.");
+      return;
+    }
 
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setFormData({ name: "", email: "", message: "" });
-    setTimeout(() => setIsSubmitted(false), 5000);
+    setSubmitError(null);
+
+    try {
+      await emailjs.sendForm(serviceId, templateId, formRef.current, publicKey);
+      setIsSubmitted(true);
+      setFormData({ name: "", email: "", message: "" });
+      setErrors({});
+      setTimeout(() => setIsSubmitted(false), 5000);
+    } catch (err) {
+      console.error("EmailJS sendForm error:", err);
+      setSubmitError(
+        `Failed to send message: ${err instanceof Error ? err.message : String(err)}`
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -96,69 +87,83 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-24 bg-neutral-950">
+    <section id="contact" className="py-24 bg-[#E0E0E0] dark:bg-neutral-950">
       <div className="max-w-7xl mx-auto px-6">
-        <AnimatedSection>
+        <ScrollAnimation>
           <div className="flex items-center gap-4 mb-16">
-            <span className="text-neutral-500 text-sm font-mono">04</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-white">
+            <span className="text-[#171717]/40 dark:text-white/40 text-sm font-mono">
+              04
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#171717] dark:text-white">
               Get in Touch
             </h2>
-            <div className="flex-1 h-px bg-neutral-800" />
+            <div className="flex-1 h-px bg-[#171717]/10 dark:bg-white/10" />
           </div>
-        </AnimatedSection>
+        </ScrollAnimation>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          <AnimatedSection>
+          <ScrollAnimation delay={100}>
             <div>
-              <h3 className="text-2xl font-semibold text-white mb-4">
-                Let&apos;s work together
+              <h3 className="text-2xl font-semibold text-[#171717] dark:text-white mb-4">
+                Let's work together
               </h3>
-              <p className="text-neutral-400 leading-relaxed mb-8">
-                Have a project in mind? I&apos;d love to hear about it. Send me
-                a message and let&apos;s discuss how we can bring your vision to
-                life.
+              <p className="text-[#171717]/60 dark:text-white/60 leading-relaxed mb-8">
+                Have a project in mind? I'd love to hear about it. Send me a message.
               </p>
 
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-white font-medium mb-2">Email</h4>
+                  <h4 className="text-[#171717] dark:text-white font-medium mb-2">
+                    Email
+                  </h4>
                   <a
-                    href="mailto:hello@example.com"
-                    className="text-neutral-400 hover:text-white transition-colors"
+                    href="mailto:edmarcloydj@gmail.com"
+                    className="text-[#171717]/60 dark:text-white/60 hover:text-[#171717] dark:hover:text-white transition-colors"
                   >
-                    hello@example.com
+                    edmarcloydj@gmail.com
                   </a>
                 </div>
                 <div>
-                  <h4 className="text-white font-medium mb-2">Phone</h4>
+                  <h4 className="text-[#171717] dark:text-white font-medium mb-2">
+                    Phone
+                  </h4>
                   <a
-                    href="tel:+1234567890"
-                    className="text-neutral-400 hover:text-white transition-colors"
+                    href="tel:+6396692879910"
+                    className="text-[#171717]/60 dark:text-white/60 hover:text-[#171717] dark:hover:text-white transition-colors"
                   >
-                    +1 (234) 567-890
+                    096692879910
                   </a>
                 </div>
                 <div>
-                  <h4 className="text-white font-medium mb-2">Location</h4>
-                  <p className="text-neutral-400">San Francisco, CA</p>
+                  <h4 className="text-[#171717] dark:text-white font-medium mb-2">
+                    Location
+                  </h4>
+                  <p className="text-[#171717]/60 dark:text-white/60">
+                    Iloilo City, Philippines
+                  </p>
                 </div>
               </div>
             </div>
-          </AnimatedSection>
+          </ScrollAnimation>
 
-          <AnimatedSection>
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <ScrollAnimation delay={200}>
+            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
               {isSubmitted && (
-                <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
-                  Message sent successfully! I&apos;ll get back to you soon.
+                <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-400 text-sm">
+                  Message sent successfully! I'll get back to you soon.
+                </div>
+              )}
+
+              {submitError && (
+                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-400 text-sm">
+                  {submitError}
                 </div>
               )}
 
               <div>
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-neutral-300 mb-2"
+                  className="block text-sm font-medium text-[#171717]/80 dark:text-white/80 mb-2"
                 >
                   Name
                 </label>
@@ -168,20 +173,22 @@ export default function Contact() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-xl bg-neutral-900 border ${
-                    errors.name ? "border-red-500" : "border-neutral-800"
-                  } text-white placeholder-neutral-500 focus:outline-none focus:border-white transition-colors`}
+                  className={`w-full px-4 py-3 rounded-xl bg-white dark:bg-neutral-900 border ${
+                    errors.name
+                      ? "border-red-500"
+                      : "border-[#171717]/10 dark:border-white/10"
+                  } text-[#171717] dark:text-white placeholder-[#171717]/30 dark:placeholder-white/30 focus:outline-none focus:border-[#171717] dark:focus:border-white transition-colors`}
                   placeholder="Your name"
                 />
                 {errors.name && (
-                  <p className="mt-1 text-sm text-red-400">{errors.name}</p>
+                  <p className="mt-1 text-sm text-red-500">{errors.name}</p>
                 )}
               </div>
 
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-neutral-300 mb-2"
+                  className="block text-sm font-medium text-[#171717]/80 dark:text-white/80 mb-2"
                 >
                   Email
                 </label>
@@ -191,20 +198,22 @@ export default function Contact() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-xl bg-neutral-900 border ${
-                    errors.email ? "border-red-500" : "border-neutral-800"
-                  } text-white placeholder-neutral-500 focus:outline-none focus:border-white transition-colors`}
+                  className={`w-full px-4 py-3 rounded-xl bg-white dark:bg-neutral-900 border ${
+                    errors.email
+                      ? "border-red-500"
+                      : "border-[#171717]/10 dark:border-white/10"
+                  } text-[#171717] dark:text-white placeholder-[#171717]/30 dark:placeholder-white/30 focus:outline-none focus:border-[#171717] dark:focus:border-white transition-colors`}
                   placeholder="your@email.com"
                 />
                 {errors.email && (
-                  <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
                 )}
               </div>
 
               <div>
                 <label
                   htmlFor="message"
-                  className="block text-sm font-medium text-neutral-300 mb-2"
+                  className="block text-sm font-medium text-[#171717]/80 dark:text-white/80 mb-2"
                 >
                   Message
                 </label>
@@ -214,50 +223,27 @@ export default function Contact() {
                   value={formData.message}
                   onChange={handleChange}
                   rows={5}
-                  className={`w-full px-4 py-3 rounded-xl bg-neutral-900 border ${
-                    errors.message ? "border-red-500" : "border-neutral-800"
-                  } text-white placeholder-neutral-500 focus:outline-none focus:border-white transition-colors resize-none`}
+                  className={`w-full px-4 py-3 rounded-xl bg-white dark:bg-neutral-900 border ${
+                    errors.message
+                      ? "border-red-500"
+                      : "border-[#171717]/10 dark:border-white/10"
+                  } text-[#171717] dark:text-white placeholder-[#171717]/30 dark:placeholder-white/30 focus:outline-none focus:border-[#171717] dark:focus:border-white transition-colors resize-none`}
                   placeholder="Tell me about your project..."
                 />
                 {errors.message && (
-                  <p className="mt-1 text-sm text-red-400">{errors.message}</p>
+                  <p className="mt-1 text-sm text-red-500">{errors.message}</p>
                 )}
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full px-8 py-4 text-sm font-medium text-neutral-900 bg-white rounded-full hover:bg-neutral-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-8 py-4 text-sm font-medium text-white bg-[#171717] dark:bg-white dark:text-neutral-900 rounded-full hover:bg-[#171717]/80 dark:hover:bg-white/80 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg
-                      className="animate-spin w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      />
-                    </svg>
-                    Sending...
-                  </span>
-                ) : (
-                  "Send Message"
-                )}
+                {isSubmitting ? "Sending..." : "Send Message"}
               </button>
             </form>
-          </AnimatedSection>
+          </ScrollAnimation>
         </div>
       </div>
     </section>

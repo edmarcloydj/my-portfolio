@@ -1,7 +1,7 @@
 import { SocialLink } from "@/lib/types";
 
 const socialLinks: SocialLink[] = [
-  { platform: "GitHub", url: "https://github.com", icon: "github" },
+  { platform: "GitHub", url: "https://github.com/edmarcloydj", icon: "github" },
   { platform: "LinkedIn", url: "https://linkedin.com", icon: "linkedin" },
   { platform: "Twitter", url: "https://twitter.com", icon: "twitter" },
 ];
@@ -36,26 +36,26 @@ function SocialIcon({ icon }: { icon: string }) {
 
 export default function Footer() {
   return (
-    <footer className="border-t border-neutral-800 bg-neutral-950">
+    <footer className="border-t border-[#171717]/10 dark:border-white/10 bg-[#E0E0E0] dark:bg-neutral-950">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">
-              Portfolio<span className="text-neutral-500">.</span>
+            <h3 className="text-[#171717] dark:text-white font-bold text-lg mb-4">
+              ecejay<span className="text-[#171717]/40 dark:text-white/40">.</span>
             </h3>
-            <p className="text-neutral-400 text-sm leading-relaxed">
+            <p className="text-[#171717]/60 dark:text-white/60 text-sm leading-relaxed">
               Crafting digital experiences with precision and creativity.
             </p>
           </div>
 
           <div>
-            <h4 className="text-white font-medium mb-4">Navigation</h4>
+            <h4 className="text-[#171717] dark:text-white font-medium mb-4">Navigation</h4>
             <div className="flex flex-col gap-3">
               {navLinks.map((link) => (
                 <a
                   key={link.label}
                   href={link.href}
-                  className="text-neutral-400 hover:text-white transition-colors text-sm"
+                  className="text-[#171717]/60 dark:text-white/60 hover:text-[#171717] dark:hover:text-white transition-colors text-sm"
                 >
                   {link.label}
                 </a>
@@ -64,7 +64,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-white font-medium mb-4">Connect</h4>
+            <h4 className="text-[#171717] dark:text-white font-medium mb-4">Connect</h4>
             <div className="flex gap-4 mb-4">
               {socialLinks.map((social) => (
                 <a
@@ -72,7 +72,7 @@ export default function Footer() {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="text-[#171717]/60 dark:text-white/60 hover:text-[#171717] dark:hover:text-white transition-colors"
                   aria-label={social.platform}
                 >
                   <SocialIcon icon={social.icon} />
@@ -81,18 +81,18 @@ export default function Footer() {
             </div>
             <a
               href="mailto:hello@example.com"
-              className="text-neutral-400 hover:text-white transition-colors text-sm"
+              className="text-[#171717]/60 dark:text-white/60 hover:text-[#171717] dark:hover:text-white transition-colors text-sm"
             >
-              hello@example.com
+              edmarcloydj@gmail.com
             </a>
           </div>
         </div>
 
-        <div className="border-t border-neutral-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-neutral-500 text-sm">
-            &copy; {new Date().getFullYear()} Portfolio. All rights reserved.
+        <div className="border-t border-[#171717]/10 dark:border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-[#171717]/40 dark:text-white/40 text-sm">
+            &copy; {new Date().getFullYear()} Edmar Cloyd Jagunap. All rights reserved.
           </p>
-          <p className="text-neutral-500 text-sm">
+          <p className="text-[#171717]/40 dark:text-white/40 text-sm">
             Designed and built with Next.js & Tailwind CSS
           </p>
         </div>

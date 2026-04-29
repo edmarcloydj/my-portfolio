@@ -16,29 +16,42 @@ export default function Button({
   children,
   variant = "primary",
   onClick,
+  href,
   className = "",
   type = "button",
   disabled = false,
 }: ButtonProps) {
   const baseStyles =
-    "inline-flex items-center justify-center px-6 py-3 text-sm font-medium transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center px-6 py-3 text-sm font-medium transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variants = {
     primary:
-      "bg-white text-neutral-900 hover:bg-neutral-200 focus:ring-white",
+      "text-white bg-[#171717] dark:bg-white dark:text-neutral-900 hover:bg-[#171717]/80 dark:hover:bg-white/80 focus:ring-[#171717]",
     secondary:
-      "bg-neutral-800 text-white hover:bg-neutral-700 focus:ring-neutral-600",
+      "text-[#171717] dark:text-white bg-[#171717]/10 dark:bg-white/10 hover:bg-[#171717]/20 dark:hover:bg-white/20 focus:ring-[#171717]/30",
     outline:
-      "border border-neutral-600 text-white hover:border-white hover:bg-white/5 focus:ring-neutral-500",
+      "text-[#171717] dark:text-white border border-[#171717]/30 dark:border-white/30 hover:border-[#171717] dark:hover:border-white hover:bg-[#171717]/5 dark:hover:bg-white/5 focus:ring-[#171717]/30",
   };
 
-  const Tag = onClick ? "button" : "a";
-  const attrs = {
-    className: `${baseStyles} ${variants[variant]} ${className}`,
-    onClick: onClick || undefined,
-    type: type || undefined,
-    disabled,
-  };
+  if (href) {
+    return (
+      <a
+        href={href}
+        className={`${baseStyles} ${variants[variant]} ${className}`}
+      >
+        {children}
+      </a>
+    );
+  }
 
-  return <Tag {...attrs}>{children}</Tag>;
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`${baseStyles} ${variants[variant]} ${className}`}
+    >
+      {children}
+    </button>
+  );
 }
