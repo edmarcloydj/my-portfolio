@@ -20,6 +20,13 @@ const skills = [
 ];
 
 const experiences = [
+  {
+    role: "Bachelor of Science in Computer Science",
+    company: "Central Philippine University",
+    year: "Present",
+    description:
+      "Currently studying Computer Science with focus on frontend development and UI/UX design.",
+  },
    {
     role: "UI/UX Designer",
     company: "Tigbaw System",
@@ -34,13 +41,7 @@ const experiences = [
     description:
       "Designed modern and user-friendly interfaces for web-based platforms.",
   },
-  {
-    role: "Bachelor of Science in Computer Science",
-    company: "Central Philippine University",
-    year: "Present",
-    description:
-      "Currently studying Computer Science with focus on frontend development and UI/UX design.",
-  },
+  
 ];
 
 export default function About() {
@@ -64,7 +65,7 @@ export default function About() {
       <div className="max-w-7xl mx-auto px-6">
         <ScrollAnimation>
           <div className="flex items-center gap-4 mb-16">
-            <span className="text-[#171717]/40 dark:text-white/40 text-sm font-mono">02</span>
+            <span className="text-[#171717] dark:text-white text-4xl font-mono">//</span>
             <h2 className="text-3xl  md:text-4xl font-bold text-[#171717] dark:text-white">
               About Me
             </h2>

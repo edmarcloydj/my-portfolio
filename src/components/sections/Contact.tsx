@@ -91,9 +91,7 @@ export default function Contact() {
       <div className="max-w-7xl mx-auto px-6">
         <ScrollAnimation>
           <div className="flex items-center gap-4 mb-16">
-            <span className="text-[#171717]/40 dark:text-white/40 text-sm font-mono">
-              04
-            </span>
+            <span className="text-[#171717] dark:text-white text-4xl font-mono">//</span>
             <h2 className="text-3xl md:text-4xl font-bold text-[#171717] dark:text-white">
               Get in Touch
             </h2>
@@ -128,10 +126,10 @@ export default function Contact() {
                     Phone
                   </h4>
                   <a
-                    href="tel:+6396692879910"
+                    href="tel:+639668279910"
                     className="text-[#171717]/60 dark:text-white/60 hover:text-[#171717] dark:hover:text-white transition-colors"
                   >
-                    096692879910
+                    09668279910
                   </a>
                 </div>
                 <div>
